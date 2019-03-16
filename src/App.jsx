@@ -18,23 +18,23 @@ class App extends Component {
 
   newUser(user) {
     this.setState({ currentUser: user });
-    const newMessage = {
-      type: "notification",
-      username: this.state.currentUser,
-      content: `${currentuser} updated his name to ${user}`
-    };
-    this.socket.send(JSON.stringify(newMessage));
-    console.log('notification sent to server', newMessage);
+    // const newMessage = {
+    //   type: "notification",
+    //   username: this.state.currentUser,
+    //   content: `${currentuser} updated his name to ${user}`
+    // };
+    // this.socket.send(JSON.stringify(newMessage));
+    // console.log('notification sent to server', newMessage);
   }
 
   newMessage(content) {
-    const newMessage = {
+    const messageObj = {
       type: 'message',
       username: this.state.currentUser,
       content: content
     };
-    this.socket.send(JSON.stringify(newMessage));
-    console.log('message sent to server', newMessage);
+    this.socket.send(JSON.stringify(messageObj));
+    console.log('message sent to server', messageObj);
   }
 
   componentDidMount() {
@@ -50,8 +50,8 @@ class App extends Component {
 
         switch (broadcastMsg.type) { //may have to change for type.notification
           case 'notification':
-            let messages = this.state.messages.concat(broadcastMsg)
-            this.setState({ messages: messages });
+            // let messages = this.state.messages.concat(broadcastMsg)
+            // this.setState({ messages: messages });
             break;
           default:
             let messages = this.state.messages.concat(broadcastMsg)
