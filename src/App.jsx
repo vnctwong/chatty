@@ -17,24 +17,27 @@ class App extends Component {
   }
 
   newUser(user) {
+    var newUsername = user;
+    var content = "Username " + this.state.currentUser + " has changed name to " + newUsername;
+
     this.setState({ currentUser: user });
-    // const newMessage = {
-    //   type: "notification",
-    //   username: this.state.currentUser,
-    //   content: `${currentuser} updated his name to ${user}`
-    // };
-    // this.socket.send(JSON.stringify(newMessage));
-    // console.log('notification sent to server', newMessage);
+    const msgObj = {
+      type: "userUpdate",
+      username: this.state.currentUser,
+      content: content
+    };
+    this.socket.send(JSON.stringify(msgObj));
+    console.log('notification sent to server', msgObj);
   }
 
   newMessage(content) {
-    const messageObj = {
+    const msgObj = {
       type: 'message',
       username: this.state.currentUser,
       content: content
     };
-    this.socket.send(JSON.stringify(messageObj));
-    console.log('message sent to server', messageObj);
+    this.socket.send(JSON.stringify(msgObj));
+    console.log('message sent to server', msgObj);
   }
 
   componentDidMount() {
@@ -49,9 +52,9 @@ class App extends Component {
         const broadcastMsg = JSON.parse(msgBroadcast.data);
 
         switch (broadcastMsg.type) { //may have to change for type.notification
-          case 'notification':
-            // let messages = this.state.messages.concat(broadcastMsg)
-            // this.setState({ messages: messages });
+          case 'notification': //not being called
+            // if changed to userUpdate, server recieves but no broadcast
+            // so action needed here, cannot duplicate actions in default 
             break;
           default:
             let messages = this.state.messages.concat(broadcastMsg)

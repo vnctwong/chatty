@@ -25,8 +25,8 @@ wss.on('connection', (ws) => {
   console.log('Client connected');
 
   // broadcast message from sending client to all connected clients
-  ws.on('message', newMessage => {
-    let msgBroadcast = JSON.parse(newMessage);
+  ws.on('message', msgObj => {
+    let msgBroadcast = JSON.parse(msgObj);
     let id = uuidv1();
     msgBroadcast.id = id;
     console.log(`ID: ${id}, username: ${msgBroadcast.username}, content: ${msgBroadcast.content}, type: ${msgBroadcast.type}`);
