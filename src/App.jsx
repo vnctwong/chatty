@@ -10,34 +10,34 @@ class App extends Component {
     this.state = {
       currentUser: 'Anonymous',
       messages: [],
+      onlineUsers: 0
+      // notifications: [],
     };
-
     this.newUser = this.newUser.bind(this);
     this.newMessage = this.newMessage.bind(this);
   }
 
   newUser(user) {
-    var newUsername = user;
-    var content = "Username " + this.state.currentUser + " has changed name to " + newUsername;
 
     this.setState({ currentUser: user });
-    const msgObj = {
-      type: "userUpdate",
+    const payloadObj = {
+      type: "notification",
       username: this.state.currentUser,
-      content: content
+      content: `Username ${this.state.currentUser} has changed name to ${user}`
     };
-    this.socket.send(JSON.stringify(msgObj));
-    console.log('notification sent to server', msgObj);
+    this.socket.send(JSON.stringify(payloadObj));
+    console.log('notification sent to server', payloadObj);
   }
 
   newMessage(content) {
-    const msgObj = {
+
+    const payloadObj = {
       type: 'message',
       username: this.state.currentUser,
       content: content
     };
-    this.socket.send(JSON.stringify(msgObj));
-    console.log('message sent to server', msgObj);
+    this.socket.send(JSON.stringify(payloadObj));
+    console.log('message sent to server', payloadObj);
   }
 
   componentDidMount() {
@@ -46,18 +46,29 @@ class App extends Component {
     // when websockets connect
     this.socket.onopen = () => {
       console.log('server connected');
-      this.socket.onmessage = (msgBroadcast) => {
-        console.log('server broadcast recieved');
-        console.log(msgBroadcast);
-        const broadcastMsg = JSON.parse(msgBroadcast.data);
 
-        switch (broadcastMsg.type) { //may have to change for type.notification
-          case 'notification': //not being called
-            // if changed to userUpdate, server recieves but no broadcast
-            // so action needed here, cannot duplicate actions in default 
+      // this.socket.onbroadcast = () => {
+      //   switch (broadcast.type) {
+      //     case 'userCountChange':
+      //       this.setState({ onlineUsers: userCount });
+      //       break;
+      //   }
+      // }
+
+      this.socket.onmessage = (payloadBroadcast) => {
+        console.log('server broadcast recieved');
+        console.log('payloadBroadcast =', payloadBroadcast);
+
+        const broadcastMsg = JSON.parse(payloadBroadcast.data);
+        const messages = this.state.messages.concat(broadcastMsg);
+        switch (broadcastMsg.type) {
+
+          case 'notification':
+            // console.log('some action for case notification')
+            this.setState({ messages: messages });  // how to change message display?
             break;
+
           default:
-            let messages = this.state.messages.concat(broadcastMsg)
             this.setState({ messages: messages });
             break;
         }
@@ -69,7 +80,7 @@ class App extends Component {
     // console.log(this.state.messages);
     return (
       <div>
-        <NavBar />
+        <NavBar onlineUsers={this.state.onlineUsers} />
         <MessageList messages={this.state.messages} />
         <ChatBar newUser={this.newUser} newMessage={this.newMessage} currentUser={this.state.currentUser} />
       </div>

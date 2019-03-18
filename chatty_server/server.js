@@ -17,26 +17,51 @@ const server = express()
 const wss = new SocketServer.Server({
   server
 });
+let socketConnections = 0;
 
-// Set up a callback that will run when a client connects to the server
-// When a client connects they are assigned a socket, represented by
-// the ws parameter in the callback.
+// const addSocketCount = () => {
+//   socketConnections++;
+//   wss.broadcast(JSON.stringify({ // sending where & how to receive?
+//     type: 'userCountChange',
+//     userCount: socketConnections
+//   }));
+// }
+
+// const minusSocketCount = () => {
+//   socketConnections--;
+//   wss.broadcast(JSON.stringify({ // sending where & how to receive?
+//     type: 'userCountChange',
+//     userCount: socketConnections
+//   }));
+// }
+
+// When a client connects they are assigned a socket, represented by the ws parameter in the callback.
 wss.on('connection', (ws) => {
   console.log('Client connected');
 
+  // addSocketCount(); // changes userCount 
+
   // broadcast message from sending client to all connected clients
-  ws.on('message', msgObj => {
-    let msgBroadcast = JSON.parse(msgObj);
+  ws.on('message', payloadObj => {
+    let payloadBroadcast = JSON.parse(payloadObj);
     let id = uuidv1();
-    msgBroadcast.id = id;
-    console.log(`ID: ${id}, username: ${msgBroadcast.username}, content: ${msgBroadcast.content}, type: ${msgBroadcast.type}`);
+    payloadBroadcast.id = id;
+
+    console.log(`ID: ${id}, username: ${payloadBroadcast.username}, content: ${payloadBroadcast.content}, type: ${payloadBroadcast.type}`);
+
     wss.clients.forEach(client => {
       if (client.readyState === SocketServer.OPEN) {
-        client.send(JSON.stringify(msgBroadcast));
+        client.send(JSON.stringify(payloadBroadcast));
       }
     });
+
   });
 
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
-  ws.on('close', () => console.log('Client disconnected'));
+  ws.on('close', () => {
+    console.log('Client disconnected');
+
+    // minusSocketCount(); // changes user count
+
+  });
 });
