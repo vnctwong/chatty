@@ -48,25 +48,15 @@ class App extends Component {
       console.log('server connected');
 
 
-      this.socket.onbroadcast = (userCountBroadcastObj) => {
-        console.log('~~~~~~~~~~~userCountBroadcastObj recieved')
-
-        const userCountObj = JSON.parse(userCountBroadcastObj.data);
-        switch (userCountObj.type) {
-          case 'userCount':
-            this.setState({ onlineUsers: userCount });
-            break;
-        }
-      }
-
-
       this.socket.onmessage = (payloadBroadcast) => {
-        console.log('server broadcast recieved');
-        console.log('payloadBroadcast =', payloadBroadcast);
+        console.log('payloadBroadcast recieved =', payloadBroadcast);
 
-        const broadcastMsg = JSON.parse(payloadBroadcast.data);
-        const messages = this.state.messages.concat(broadcastMsg);
-        switch (broadcastMsg.type) {
+        const broadcastObj = JSON.parse(payloadBroadcast.data);
+        const messages = this.state.messages.concat(broadcastObj);
+        switch (broadcastObj.type) {
+          case 'userCount':
+            this.setState({ onlineUsers: broadcastObj.userCount });
+            break;
 
           case 'notification':
             // console.log('some action for case notification')

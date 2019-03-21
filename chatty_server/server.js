@@ -19,32 +19,33 @@ const wss = new SocketServer.Server({
   server
 });
 
-const userCountBroadcast = () => {
-  console.log('~~~~~~ userCountBroadcast called')
-
-  let userCountBroadcastObj = {
-    type: 'userCount',
-    userCount: wss.clients.size
-  }
-  wss.broadcast(userCountBroadcastObj);
-}
-
-// Just fnc dfn, actual broadcast called in userCountBroadcast
-wss.broadcast = function broadcast(userDataObj) {
+// Just fnc dfn, actual function called in socketCount below
+wss.broadcast = function broadcast(payloadBroadcast) {
   wss.clients.forEach((client => {
     if (client.readyState === 1) {
-      client.send(JSON.stringify(userDataObj))
+      client.send(JSON.stringify(payloadBroadcast))
     }
   }));
 };
+
+const socketCount = () => {
+  console.log('~~~~~~ socketCount called')
+
+  let payloadBroadcast = {
+    type: 'userCount',
+    userCount: wss.clients.size
+  }
+  // not actual "broadcast", just fnc to loop/send clients. Broadcasts only at socket connection below
+  wss.broadcast(payloadBroadcast);
+}
 
 // When a client connects they are assigned a socket, represented by the ws parameter in the callback.
 wss.on('connection', (ws) => {
   console.log('Client connected');
 
-  userCountBroadcast();
+  socketCount();
 
-  // broadcast message from sending client to all connected clients
+  // broadcast to all connected clients. Regardless of source, all data through socket is payloadBroadcast
   ws.on('message', payloadObj => {
     let payloadBroadcast = JSON.parse(payloadObj);
     let id = uuidv1();
@@ -64,7 +65,7 @@ wss.on('connection', (ws) => {
   ws.on('close', () => {
     console.log('Client disconnected');
 
-    userCountBroadcast();
+    socketCount();
 
   });
 });
