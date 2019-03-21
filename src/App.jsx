@@ -10,8 +10,8 @@ class App extends Component {
     this.state = {
       currentUser: 'Anonymous',
       messages: [],
-      onlineUsers: 0
-      // notifications: [],
+      onlineUsers: 0,
+
     };
     this.newUser = this.newUser.bind(this);
     this.newMessage = this.newMessage.bind(this);
@@ -61,6 +61,7 @@ class App extends Component {
 
         const broadcastMsg = JSON.parse(payloadBroadcast.data);
         const messages = this.state.messages.concat(broadcastMsg);
+        const onlineUsers = broadcastMsg.data;
         switch (broadcastMsg.type) {
 
           case 'notification':
