@@ -47,13 +47,18 @@ class App extends Component {
     this.socket.onopen = () => {
       console.log('server connected');
 
-      // this.socket.onbroadcast = () => {
-      //   switch (broadcast.type) {
-      //     case 'userCountChange':
-      //       this.setState({ onlineUsers: userCount });
-      //       break;
-      //   }
-      // }
+
+      this.socket.onbroadcast = (userCountBroadcastObj) => {
+        console.log('~~~~~~~~~~~userCountBroadcastObj recieved')
+
+        const userCountObj = JSON.parse(userCountBroadcastObj.data);
+        switch (userCountObj.type) {
+          case 'userCount':
+            this.setState({ onlineUsers: userCount });
+            break;
+        }
+      }
+
 
       this.socket.onmessage = (payloadBroadcast) => {
         console.log('server broadcast recieved');
@@ -61,7 +66,6 @@ class App extends Component {
 
         const broadcastMsg = JSON.parse(payloadBroadcast.data);
         const messages = this.state.messages.concat(broadcastMsg);
-        const onlineUsers = broadcastMsg.data;
         switch (broadcastMsg.type) {
 
           case 'notification':
