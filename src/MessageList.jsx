@@ -6,16 +6,17 @@ class MessageList extends Component {
   constructor(props) {
     super(props);
   }
+
   render() {
     const messageArray = this.props.messages.map(message => {
-      // console.log()
+
       if (message.type === 'message') {
         return <Message key={message.id} username={message.username} content={message.content} />
+
       } else if (message.type === 'notification') {
-        console.log(message)
-        // return 'hello'
         return <Notification key={message.id} content={message.content} />
       }
+
     });
 
     return (

@@ -41,32 +41,24 @@ class App extends Component {
   }
 
   componentDidMount() {
+
     console.log("componentDidMount app.js");
     this.socket = new WebSocket('ws://localhost:3001');
     // when websockets connect
     this.socket.onopen = () => {
       console.log('server connected');
 
-      // this.socket.onbroadcast = () => {
-      //   switch (broadcast.type) {
-      //     case 'userCountChange':
-      //       this.setState({ onlineUsers: userCount });
-      //       break;
-      //   }
-      // }
-
+      // Recieves broadcast from server
       this.socket.onmessage = (payloadBroadcast) => {
         console.log('server broadcast recieved');
         console.log('payloadBroadcast =', payloadBroadcast);
 
         const broadcastMsg = JSON.parse(payloadBroadcast.data);
         const messages = this.state.messages.concat(broadcastMsg);
-        const onlineUsers = broadcastMsg.data;
         switch (broadcastMsg.type) {
 
           case 'notification':
-            // console.log('some action for case notification')
-            this.setState({ messages: messages });  // how to change message display?
+            this.setState({ messages: messages });
             break;
 
           default:
@@ -78,7 +70,7 @@ class App extends Component {
   }
 
   render() {
-    // console.log(this.state.messages);
+    // Renders component everytime state changes
     return (
       <div>
         <NavBar onlineUsers={this.state.onlineUsers} />

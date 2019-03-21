@@ -21,7 +21,6 @@ class ChatBar extends Component {
   userKeyPress(event) {
     if (event.keyCode == 13) {
       this.props.newUser(this.state.user);
-      //this.setState({ user: '' });
     }
   }
 
